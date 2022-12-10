@@ -106,6 +106,8 @@ int Server::WaitForPlayerToJoin()
 
 	}
 	std::cout << "Accepted connection" << '\n';
+
+
 	WSACleanup();
 
 	// -------------------------------------------- Step 6

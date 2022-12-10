@@ -5,7 +5,7 @@
 
 #include"NavalBattle.h"
 
-
+//UniqueMultiplayerID
 int main(int argc, char* argv[])
 {
 	setlocale(LC_ALL, "portuguese");
