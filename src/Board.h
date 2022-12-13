@@ -6,13 +6,12 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "Utils.h"
 
 class Board
 {
 public:
-	void PrintBoard(char*);
-	//~Board();
-
+	void PrintBoard(char[][Utils::GRID_SIZE]);
 private:
 	std::mutex methodLock;
 	int N, M;

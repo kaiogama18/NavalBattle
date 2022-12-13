@@ -26,19 +26,14 @@ NavalBattle::NavalBattle()
 void NavalBattle::Run()
 {
 	std::cout << '\n' << " NavalBattle::Run()" << '\n';
-	
+
 	Board board;
 	Player* player1 = new Player();
 	Player* player2 = new Player();
 
-	board.PrintBoard(*player1->gridBoard);
+	board.PrintBoard(player1->griadBoard);
+	board.PrintBoard(player2->griadBoard);
 
-	//player1->MyBoard(board);
-	
-	//player1->enterShips();
-
-	//board.PrintBoard();
-	
 	//gotoxy(0, 25);
 	//board.PrintBoard();
 	system("PAUSE");

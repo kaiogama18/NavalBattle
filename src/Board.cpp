@@ -1,23 +1,6 @@
 #include "Board.h"
 #include <windows.h>
-
-constexpr unsigned MAX_ROWS{ 11 };
-constexpr unsigned MAX_COLS{ 11 };
-char arrBoardss[MAX_ROWS][MAX_COLS] =
-{
-		{' ','A','B','C','D','E','F','G','H','I','J'},
-		{'1','-','-','-','-','-','-','-','-','-','-'},
-		{'2','-','-','-','-','-','-','-','-','-','-'},
-		{'3','-','-','-','-','-','-','-','-','-','-'},
-		{'4','-','-','-','-','-','-','-','-','-','-'},
-		{'5','-','-','-','-','-','-','-','-','-','-'},
-		{'6','-','-','-','-','-','-','-','-','-','-'},
-		{'7','-','-','-','-','-','-','-','-','-','-'},
-		{'8','-','-','-','-','-','-','-','-','-','-'},
-		{'9','-','-','-','-','-','-','-','-','-','-'},
-		{'0','-','-','-','-','-','-','-','-','-','-'},
-
-};
+#include "Utils.h"
 
 void gotoxy(int x, int y)
 {
@@ -27,17 +10,16 @@ void gotoxy(int x, int y)
 	dwPos.Y = y;
 	SetConsoleCursorPosition(hcon, dwPos);
 }
-void Board::PrintBoard(char * arrBoard)
+
+void Board::PrintBoard(char arrBoard[][Utils::GRID_SIZE])
 {
 	int id = 1;
-	for (int i = 0; i < MAX_ROWS; ++i)
+	for (int i = 0; i < Utils::GRID_SIZE; ++i)
 	{
 		std::cout << '\n';
-		for (int j = 0; j < MAX_COLS; ++j)
+		for (int j = 0; j < Utils::GRID_SIZE; ++j)
 		{
-			std::cout << '-' << ' ';
-			std::cout << arrBoard[i][j] << ' ';
-			//std::cout << '[' <<  i << ',' << j << ']' << ' ';
+			std::cout << arrBoard[i][j];
 		}
 	}
 	if (id == 1)

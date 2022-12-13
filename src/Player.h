@@ -1,11 +1,10 @@
 #pragma once
-
-constexpr unsigned GRID_SIZE = 11;
+#include "Utils.h"
 
 class Player
 {
 public:
-	char gridBoard[GRID_SIZE][GRID_SIZE] =
+	char  griadBoard[Utils::GRID_SIZE][Utils::GRID_SIZE] =
 	{
 			{' ','A','B','C','D','E','F','G','H','I','J'},
 			{'1','-','-','-','-','-','-','-','-','-','-'},
