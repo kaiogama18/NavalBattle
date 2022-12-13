@@ -19,7 +19,7 @@ void Board::PrintBoard(char arrBoard[][Utils::GRID_SIZE])
 		std::cout << '\n';
 		for (int j = 0; j < Utils::GRID_SIZE; ++j)
 		{
-			std::cout << arrBoard[i][j];
+			std::cout << arrBoard[i][j] << ' ';
 		}
 	}
 	if (id == 1)

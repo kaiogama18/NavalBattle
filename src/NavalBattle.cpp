@@ -15,7 +15,7 @@ NavalBattle::NavalBattle()
 	{
 		std::cout << "Sending seed nr for rnd: " << currentTime << '\n';
 		Run();
-	}
+	} 
 	else
 	{
 		std::cout << '\n' << "[socketForClient] Player joined at socket : "
