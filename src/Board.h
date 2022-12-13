@@ -11,7 +11,7 @@
 class Board
 {
 public:
-	void PrintBoard(char[][Utils::GRID_SIZE]);
+	void PrintBoard(int , char[][Utils::GRID_SIZE]);
 private:
 	std::mutex methodLock;
 	int N, M;

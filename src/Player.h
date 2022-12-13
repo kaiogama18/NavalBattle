@@ -3,6 +3,8 @@
 
 class Player
 {
+private:
+	int id{};
 public:
 	char  griadBoard[Utils::GRID_SIZE][Utils::GRID_SIZE] =
 	{
@@ -19,6 +21,13 @@ public:
 			{'0','-','-','-','-','-','-','-','-','-','-'},
 
 	};
-	void enterShips(char*);
+
+	void AddShip();
+
+	void SetShip(int, std::pair<int, int>, char);
+
+
+	int GetId();
+	void SetId(int);
 };
 

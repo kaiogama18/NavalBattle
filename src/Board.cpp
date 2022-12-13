@@ -11,9 +11,12 @@ void gotoxy(int x, int y)
 	SetConsoleCursorPosition(hcon, dwPos);
 }
 
-void Board::PrintBoard(char arrBoard[][Utils::GRID_SIZE])
+void Board::PrintBoard(int id, char arrBoard[][Utils::GRID_SIZE])
 {
-	int id = 1;
+	if (id == 2)
+	{
+		std::cout << "\n -------------------- \n";
+	}
 	for (int i = 0; i < Utils::GRID_SIZE; ++i)
 	{
 		std::cout << '\n';
@@ -24,10 +27,10 @@ void Board::PrintBoard(char arrBoard[][Utils::GRID_SIZE])
 	}
 	if (id == 1)
 	{
-		std::cout << "\n	SUA FROTA \n";
+		std::cout << "\n      SUA FROTA \n";
 	}
 	else
 	{
-		std::cout << "\n	SUA INIMIGA \n";
+		std::cout << "\n    FROTA INIMIGA \n";
 	}
 }
