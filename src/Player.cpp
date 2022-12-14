@@ -1,6 +1,15 @@
 #include<iostream>
 
 #include "Player.h"
+#include "Ship.h"
+#include "AddShip.h"
+#include "Board.h"
+
+Player::Player()
+{
+}
+
+
 
 
 void Player::PrintBoard()
@@ -18,17 +27,6 @@ void Player::PrintBoard()
 		}
 	}
 	std::cout << "\n      SUA FROTA \n";
-	/*
-	if (id == 1)
-	{
-		std::cout << "\n      SUA FROTA \n";
-	}
-	else
-	{
-		std::cout << "\n    FROTA INIMIGA \n";
-	}
-	*/
-
 }
 
 

@@ -30,25 +30,14 @@ NavalBattle::NavalBattle()
 
 void NavalBattle::Run()
 {
-	//std::cout << '\n' << " NavalBattle::Run()" << '\n';
 
-	Board board;
-	Player* player1 = new Player();
-	Player* player2 = new Player();
+
+//	Board board;
 	
-	/*
-	player1->setId(1);
-	player2->setId(2);
-	board.PrintBoard(player1->getId(), player1->griadBoard);
-	board.PrintBoard(player2->getId(), player1->griadBoard);
-	*/
-
-	//player1->PrintBoard();
-	//player1->AddShip();
+	//std::cout << "\nCriando um novo jogador! \n";
+	Player* player1 = new Player();
+	//Player* player2 = new Player();
 	AddShip::AddShip(player1->griadBoard);
-	//gotoxy(0, 25);
-	//board.PrintBoard();
-	system("PAUSE");
 
 }
 

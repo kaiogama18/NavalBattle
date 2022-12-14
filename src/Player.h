@@ -3,9 +3,13 @@
 
 class Player
 {
-private:
-	int id{};
 public:
+
+	Player();
+	void PrintBoard();
+	int GetId();
+	void SetId(int);
+
 	char  griadBoard[Utils::GRID_SIZE][Utils::GRID_SIZE] =
 	{
 			{' ','A','B','C','D','E','F','G','H','I','J'},
@@ -22,11 +26,7 @@ public:
 
 	};
 
-
-	void PrintBoard();
-
-	int GetId();
-	void SetId(int);
-
+private:
+	int id{};
 };
 

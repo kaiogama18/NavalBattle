@@ -1,7 +1,8 @@
+#pragma once
 
 class Server
 {
 public:
 	Server();
-	int  WaitForPlayerToJoin();
+	int JoinServer();
 };
