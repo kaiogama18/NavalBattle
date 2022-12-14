@@ -22,12 +22,11 @@ public:
 
 	};
 
-	void AddShip();
 
-	void SetShip(int, std::pair<int, int>, char);
-
+	void PrintBoard();
 
 	int GetId();
 	void SetId(int);
+
 };
 

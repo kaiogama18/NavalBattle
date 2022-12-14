@@ -3,6 +3,7 @@
 #include "Board.h"
 #include "Server.h"
 #include "Player.h"
+#include "AddShip.h"
 
 
 NavalBattle::NavalBattle()
@@ -42,9 +43,9 @@ void NavalBattle::Run()
 	board.PrintBoard(player2->getId(), player1->griadBoard);
 	*/
 
-
-	player1->AddShip();
-
+	//player1->PrintBoard();
+	//player1->AddShip();
+	AddShip::AddShip(player1->griadBoard);
 	//gotoxy(0, 25);
 	//board.PrintBoard();
 	system("PAUSE");
