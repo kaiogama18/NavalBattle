@@ -1,38 +1,19 @@
 #pragma once
 
-#include <stdlib.h>
-#include <vector>
 #include <iostream>
-#include <mutex>
-#include <condition_variable>
+#include <vector>
 
 #include "Utils.h"
+#include "Ship.h"
+
 
 class Board
 {
 public:
-
-	char  griadBoard[Utils::GRID_SIZE][Utils::GRID_SIZE] =
-	{
-			{' ','A','B','C','D','E','F','G','H','I','J'},
-			{'1','-','-','-','-','-','-','-','-','-','-'},
-			{'2','-','-','-','-','-','-','-','-','-','-'},
-			{'3','-','-','-','-','-','-','-','-','-','-'},
-			{'4','-','-','-','-','-','-','-','-','-','-'},
-			{'5','-','-','-','-','-','-','-','-','-','-'},
-			{'6','-','-','-','-','-','-','-','-','-','-'},
-			{'7','-','-','-','-','-','-','-','-','-','-'},
-			{'8','-','-','-','-','-','-','-','-','-','-'},
-			{'9','-','-','-','-','-','-','-','-','-','-'},
-			{'0','-','-','-','-','-','-','-','-','-','-'},
-
-	};
-	
-
+	Board();
 	void PrintBoard();
+	void AddShip();
 private:
-	int UniqueMultiplayerID{12321};
-	std::mutex methodLock;
-	int N, M;
-	bool** board;
+	char m_Board[Utils::GRID_SIZE][Utils::GRID_SIZE];
+	std::vector<Ship> m_Ships;
 };

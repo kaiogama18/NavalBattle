@@ -1,12 +1,26 @@
 #include "Ship.h"
 
-
+/*
 Ship::Ship()
+{
+}
+*/
+Ship::Ship(const int& id, std::string name, int space, int quantity)
+	: ID{ id },m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }
 {
 
 }
 
-void Ship::AddShip(const std::string& name, const int& space,  const int& quantity)
+
+/*
+Ship::Ship(const int* id, const std::string& name, const int& space, const int& quantity)
+	: ID{ id } , m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }
+{
+}
+*/
+
+/*
+void Ship::AddShip(const std::string& name, const int& space, const int& quantity)
 {
 	if (!name.empty())
 	{
@@ -15,6 +29,7 @@ void Ship::AddShip(const std::string& name, const int& space,  const int& quanti
 		m_Quantity = quantity;
 	}
 }
+*/
 
 
 /*

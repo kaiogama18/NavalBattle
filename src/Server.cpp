@@ -11,7 +11,7 @@ Server::Server() {};
 int Server::JoinServer()
 {
 	// -------------------------------------------- Step 1 - Set up DLL 
-	std::cout << "\n===== Step 1 - Set up DLL" << "\n\n";
+	//std::cout << "\n===== Step 1 - Set up DLL" << "\n\n";
 	SOCKET clientSocket;
 	int port = 55555;
 	WSADATA wsaData;
@@ -33,7 +33,7 @@ int Server::JoinServer()
 
 
 	// -------------------------------------------- Step 2 - Set up Server Socket  
-	std::cout << "\n===== Step 2 - Set up Server Socket" << "\n\n";
+	//std::cout << "\n===== Step 2 - Set up Server Socket" << "\n\n";
 	clientSocket = INVALID_SOCKET;
 	clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 

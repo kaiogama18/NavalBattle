@@ -2,43 +2,27 @@
 
 #include "Player.h"
 #include "Ship.h"
-#include "AddShip.h"
-#include "Board.h"
 
 Player::Player()
+	:m_Health{}
 {
+	m_Board = new Board;
 }
-
-
-
 
 void Player::PrintBoard()
 {
-	if (id == 2)
-	{
-		std::cout << "\n -------------------- \n";
-	}
-	for (int i = 0; i < Utils::GRID_SIZE; ++i)
-	{
-		std::cout << '\n';
-		for (int j = 0; j < Utils::GRID_SIZE; ++j)
-		{
-			std::cout << griadBoard[i][j] << ' ';
-		}
-	}
+	m_Board->PrintBoard();
 	std::cout << "\n      SUA FROTA \n";
 }
 
-
-
-void Player::SetId(int newId)
+void Player::AddShip(int& health)
 {
-	id = newId;
-}
-
-int Player::GetId()
-{
-	return id;
+	m_Board->AddShip();
 }
 
 
+
+Player::~Player()
+{
+	delete m_Board;
+}

@@ -5,12 +5,12 @@
 class Ship
 {
 public:
-	Ship();
-	//Ship(int,  const int);
-	void AddShip(const std::string&, const int&, const int&);
-private:
+	Ship(const int&, std::string,  int,  int);
+	
+	const int ID;
 	std::string m_Name;
 	int m_Space;
 	int m_Quantity;
-
 };
+
+	//void AddShip(const std::string&, const int&, const int&);
