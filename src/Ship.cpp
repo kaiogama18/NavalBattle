@@ -5,8 +5,9 @@ Ship::Ship()
 {
 }
 */
-Ship::Ship(const int& id, std::string name, int space, int quantity)
-	: ID{ id },m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }
+
+Ship::Ship(const int& id, std::string name, int  space, int  quantity, char icon)
+	: ID{ id }, m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }, m_Icon{icon}
 {
 
 }
