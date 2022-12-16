@@ -1,53 +1,37 @@
 #include "Ship.h"
-
-/*
-Ship::Ship()
-{
-}
-*/
+#include <iostream>
 
 Ship::Ship(const int& id, std::string name, int  space, int  quantity, char icon)
-	: ID{ id }, m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }, m_Icon{icon}
-{
-
-}
-
-
-/*
-Ship::Ship(const int* id, const std::string& name, const int& space, const int& quantity)
-	: ID{ id } , m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }
+	: ID{ id }, m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }, m_Icon{ icon }, m_TotalShip{}
 {
 }
-*/
 
-/*
-void Ship::AddShip(const std::string& name, const int& space, const int& quantity)
+const int& Ship::GetId() const
 {
-	if (!name.empty())
-	{
-		m_Name = name;
-		m_Space = space;
-		m_Quantity = quantity;
-	}
+	return ID;
 }
-*/
 
-
-/*
-Ship::Ship(int qta, const int space)
-	: m_Qta{ qta }
-	, m_Space{ space }
+const std::string& Ship::GetName() const
 {
-
+	return m_Name;
 }
-*/
 
-
-/*
-
-Ship::Ship(int qta, int space)
+const int Ship::GetQuantity() const
 {
-	m_qta = qta;
-	m_space = space;
-} : m_qta{ qta }, m_space{ space }
-*/
+	return m_Quantity;
+}
+
+const int& Ship::GetSpace() const
+{
+	return m_Space;
+}
+
+const char& Ship::GetIcon() const
+{
+	return m_Icon;
+}
+
+const int& Ship::getTotalShip() const
+{
+	return m_TotalShip;
+}

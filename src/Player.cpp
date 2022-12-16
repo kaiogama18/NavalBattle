@@ -20,6 +20,15 @@ void Player::AddShip(int& health)
 	m_Board->AddShip();
 }
 
+void Player::SetHealth()
+{
+	m_Health = m_Board->GetTotalHit();
+}
+
+int Player::GetHealth()
+{
+	return m_Health;
+}
 
 
 Player::~Player()

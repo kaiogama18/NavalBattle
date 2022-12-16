@@ -10,13 +10,15 @@ class Player
 {
 public:
 	Player();
-	int m_Health;
 	
 	void PrintBoard();
-	void AddShip(int &);
+	void AddShip(int&);
+	void SetHealth();
+	int GetHealth();
 	~Player();
 private:
 	Board* m_Board;
+	int m_Health;
 	//int ID;
 	//std::vector<Ship> m_Ships;
 };

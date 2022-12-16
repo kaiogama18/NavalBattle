@@ -7,7 +7,12 @@ NavalBattle::NavalBattle()
 {
 	std::cout << "\n ----- [ BATALHA NAVAL ] ----- \n";
 	m_Player = new Player;
-	m_Player->PrintBoard();
+	m_Player->SetHealth();
+
+	std::cout << "\n Minha vida: " << m_Player->GetHealth();
+
+	
+	//m_Player->PrintBoard();
 
 	//m_Player->AddShip(m_Player->m_Health);
 	//m_Player->PrintBoard();
