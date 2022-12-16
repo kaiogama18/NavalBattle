@@ -15,7 +15,7 @@ public:
 	const char& GetIcon() const;
 	const int& getTotalShip() const;
 
-	//int setQuantity() const;
+	const void SetQuantity(int ) ;
 
 private:
 	const int ID;

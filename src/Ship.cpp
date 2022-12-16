@@ -35,3 +35,9 @@ const int& Ship::getTotalShip() const
 {
 	return m_TotalShip;
 }
+
+
+const void Ship::SetQuantity(int quantity)
+{
+	m_Quantity = quantity;
+}
