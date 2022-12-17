@@ -2,7 +2,7 @@
 #include <iostream>
 
 Ship::Ship(const int& id, std::string name, int  space, int  quantity, char icon)
-	: ID{ id }, m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }, m_Icon{ icon }, m_TotalShip{}
+	: ID{ id }, m_Name{ name }, m_Space{ space }, m_Quantity{ quantity }, m_Icon{ icon }
 {
 }
 
@@ -31,11 +31,17 @@ const char& Ship::GetIcon() const
 	return m_Icon;
 }
 
-const int& Ship::getTotalShip() const
+/*
+const int& Ship::GetTotalShip() const
 {
 	return m_TotalShip;
 }
 
+const void Ship::SetTotalShip(int ship)
+{
+	m_TotalShip = m_TotalShip + ship;
+}
+*/
 
 const void Ship::SetQuantity(int quantity)
 {

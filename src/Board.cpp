@@ -16,15 +16,22 @@ Board::Board() : m_Board{
 			{'8','-','-','-','-','-','-','-','-','-','-'},
 			{'9','-','-','-','-','-','-','-','-','-','-'},
 			{'0','-','-','-','-','-','-','-','-','-','-'},
-}
+}, m_TotalHit{}, m_TotalShip{}
 {
 	m_Ships.push_back(Ship(1, "Submarinos", 2, 3, '2'));
 	m_Ships.push_back(Ship(2, "Contratorpedeiros", 3, 2, '3'));
 	m_Ships.push_back(Ship(3, "Navio-Tanque", 4, 1, '4'));
 	m_Ships.push_back(Ship(4, "Porta-Avião", 5, 1, '5'));
 
+	for (auto i = m_Ships.begin(); i != m_Ships.end(); ++i)
+	{
+		SetTotalHit(i->GetSpace() * i->GetQuantity());
+		SetTotalShip(GetTotalShip() + i->GetQuantity());
+	}
 	AddShip();
 }
+
+
 
 void Board::PrintBoard()
 {
@@ -43,24 +50,26 @@ void Board::SetShip(const int& ID, char& aligned)
 	int reppet{};
 	for (auto aux = m_Ships.begin(); aux != m_Ships.end(); ++aux)
 	{
-		if (ID == aux->GetId())
+		if (ID == aux->GetId() && aux->GetQuantity() != 0)
 		{
 			std::cout << "\n Adicionando: " << aux->GetName() << " (" << aux->GetSpace() << " quadrados)";
 			std::cout << "\n Na posição: [" << m_Coordinates.first << "," << m_Coordinates.second << "]\n";
 
-			if (aligned == 'h')
+			if (aligned == 'h' && m_Coordinates.second + (aux->GetSpace() - 1) < Utils::GRID_SIZE - 1)
 			{
 				for (int reppet = 0; reppet < aux->GetSpace(); ++reppet)
 					this->m_Board[m_Coordinates.first][m_Coordinates.second + reppet] = aux->GetIcon();
 			}
-
-			if (aligned == 'v')
+			else if (aligned == 'v' && m_Coordinates.first + (aux->GetSpace() - 1) < Utils::GRID_SIZE - 1)
 			{
 				for (int reppet = 0; reppet < aux->GetSpace(); ++reppet)
 					this->m_Board[m_Coordinates.first + reppet][m_Coordinates.second] = aux->GetIcon();
 			}
 			aux->SetQuantity(aux->GetQuantity() - 1);
-			m_Total_Hit = aux->GetQuantity();
+			m_TotalHit = aux->GetQuantity();
+			SetTotalShip(GetTotalShip() - 1);
+			PrintBoard();
+			std::cout << "\n\n " << aux->GetName() << " adicionado com sucesso! \n";
 		}
 	}
 }
@@ -70,14 +79,9 @@ void Board::AddShip()
 	int id_ship{};
 	char aligned{};
 
-
-	std::cout << "\n Coloque seus navios em campo! \n";
-	std::cout << "\n Ship::getTotalShip: " << &Ship::getTotalShip << " \n";
-
-
-
-	for (int aux = 0; aux < 2; ++aux)
+	for (int aux = 0; aux < GetTotalShip(); ++aux)
 	{
+		std::cout << "\n Coloque seus " << GetTotalShip() << " navios em campo! \n";
 		for (int i = 0; i < Utils::GRID_SIZE; ++i)
 		{
 			std::cout << '\n';
@@ -91,14 +95,17 @@ void Board::AddShip()
 				else std::cout << "    " << m_Board[i][j] << "   ";
 			}
 		}
-		std::cout << "\n\n Você AINDA possui:\n";
 
+		std::cout << "\n\n Você AINDA possui:\n";
 		for (auto i = m_Ships.begin(); i != m_Ships.end(); ++i)
 		{
-			std::cout << " [ ID: " << i->GetId() << " ]" << " ..............."
-				<< " " << i->GetQuantity() << "x "
-				<< i->GetName() << " (" << i->GetSpace()
-				<< " quadrados)" << '\n';
+			if (i->GetQuantity() != 0)
+			{
+				std::cout << " [ ID: " << i->GetId() << " ]" << " ..............."
+					<< " " << i->GetQuantity() << "x "
+					<< i->GetName() << " (" << i->GetSpace()
+					<< " quadrados)" << '\n';
+			}
 		}
 
 		std::cout << "\n Deseja adicionar qual navio?" << '\n';
@@ -112,19 +119,26 @@ void Board::AddShip()
 		std::cout << " Alinhar o navio na [ VERTICAL - HORIZONTAL ]: ";
 		std::cin >> aligned;
 		aligned = tolower(aligned);
-
 		SetShip(id_ship, aligned);
-
-		std::cout << "\n Navio adicionado com sucesso! \n";
 	}
-
-
 }
 
-
-int Board::GetTotalHit()
+const void Board::SetTotalHit(int hit)
 {
-	return m_Total_Hit;
+	m_TotalHit = m_TotalHit + hit;
 }
 
+const int Board::GetTotalHit()
+{
+	return m_TotalHit;
+}
 
+const void Board::SetTotalShip(int ship)
+{
+	m_TotalShip = ship;
+}
+
+const int Board::GetTotalShip()
+{
+	return m_TotalShip;
+}

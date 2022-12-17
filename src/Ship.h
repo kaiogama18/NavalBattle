@@ -13,9 +13,11 @@ public:
 	const int GetQuantity() const;
 	const int& GetSpace() const;
 	const char& GetIcon() const;
-	const int& getTotalShip() const;
+	
+	//const int& GetTotalShip() const;
+	//const void SetTotalShip(int);
 
-	const void SetQuantity(int ) ;
+	const void SetQuantity(int);
 
 private:
 	const int ID;
@@ -24,5 +26,5 @@ private:
 	int m_Space;
 	char m_Icon;
 
-	int m_TotalShip;
+	//int m_TotalShip;
 };
