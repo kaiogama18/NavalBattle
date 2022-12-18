@@ -1,6 +1,7 @@
 #include "NavalBattle.h"
 
 #include<iostream>
+#include<thread>
 #include "Player.h"
 
 NavalBattle::NavalBattle()
@@ -8,8 +9,12 @@ NavalBattle::NavalBattle()
 	std::cout << "\n ----- [ BATALHA NAVAL ] ----- \n";
 	m_Player = new Player;
 	m_Player->SetHealth();
+	//std::cout << "\n Minha vida: " << m_Player->GetHealth();
 
-	std::cout << "\n Minha vida: " << m_Player->GetHealth();
+
+	//std::thread mythread()
+
+
 
 	
 	//m_Player->PrintBoard();

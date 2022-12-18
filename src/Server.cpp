@@ -6,6 +6,14 @@
 #include <tchar.h>
 #include<iostream>
 
+//DECLARATIONS
+	//error trapping signals
+#define SIGINT 2
+#define SIGKILL 9
+#define SIGQUIT 3
+//SOCKETS
+SOCKET sock, client;
+
 Server::Server() {};
 
 int Server::JoinServer()
