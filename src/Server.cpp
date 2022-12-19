@@ -1,4 +1,3 @@
-#include "Server.h"
 #include "stdafx.h"
 #pragma comment(lib,"ws2_32.lib")
 #include<winsock2.h>
@@ -6,9 +5,28 @@
 
 #pragma warning(disable: 4996)
 
-Server::Server() {};
+SOCKET Connections[100];
+int Counter = 0;
 
-int Server::JoinServer()
+void ClientHandler(int index)
+{
+	char msg[256];
+	while (true)
+	{
+		recv(Connections[index], msg, sizeof(msg), NULL);
+		for (int i = 0; i < Counter; i++)
+		{
+			if (i == index)
+			{
+				continue;
+			}
+
+			send(Connections[i], msg, sizeof(msg), NULL);
+		}
+	}
+}
+
+int main(int argc, char* argv[])
 {
 	WSADATA wsadata;
 	WORD DLLVersion = MAKEWORD(2, 1);
@@ -24,18 +42,34 @@ int Server::JoinServer()
 	addr.sin_port = htons(1111);
 	addr.sin_family = AF_INET;
 
-	SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
-	if (connect(Connection, (SOCKADDR*)&addr, sizeof(addr)))
+	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
+	bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
+
+	listen(sListen, SOMAXCONN);
+	listen(sListen, 3);
+
+	SOCKET newConnection;
+	for (int i = 0; i < 100; i++)
 	{
-		std::cout << "Error: Failed connect to server. \n";
-		return 1;
+		newConnection = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
+
+		if (newConnection == 0)
+		{
+			std::cout << "Error #2\n";
+		}
+		else
+		{
+			std::cout << "Client Connected! \n";
+
+			char msg[256] = "Hello. It's my first network program";
+			send(newConnection, msg, sizeof(msg), NULL);
+
+			Connections[i] = newConnection;
+			Counter++;
+			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
+
+		}
 	}
-	std::cout << "Connected!\n";
-
-	char msg[256]{};
-	recv(Connection, msg, sizeof(msg), NULL);
-	std::cout << msg << '\n';
-
 	system("PAUSE");
 	return 0;
 

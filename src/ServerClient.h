@@ -1,8 +1,8 @@
 #pragma once
 
-class Server
+class ServerClient
 {
 public:
-	Server();
+	ServerClient();
 	int JoinServer();
 };
