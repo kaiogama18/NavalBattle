@@ -6,6 +6,34 @@
 
 Board::Board() : m_Board{
 			{' ','A','B','C','D','E','F','G','H','I','J'},
+			{'1','-','2','-','-','-','-','-','-','-','-'},
+			{'2','-','2','-','-','3','3','3','-','-','3'},
+			{'3','-','-','-','-','-','-','-','-','-','3'},
+			{'4','-','2','4','-','-','-','-','-','3','3'},
+			{'5','-','2','4','-','-','-','-','-','3','-'},
+			{'6','-','-','4','-','-','-','-','-','3','-'},
+			{'7','-','2','4','-','-','-','-','-','-','-'},
+			{'8','-','2','-','5','5','5','5','5','-','-'},
+			{'9','-','-','-','-','-','-','-','-','-','-'},
+			{'0','-','-','-','-','-','-','-','-','-','-'},
+
+}, m_TotalHit{}, m_TotalShip{}
+{
+	m_Ships.push_back(Ship(1, "Submarinos", 2, 3, '2'));
+	m_Ships.push_back(Ship(2, "Contratorpedeiros", 3, 2, '3'));
+	m_Ships.push_back(Ship(3, "Navio-Tanque", 4, 1, '4'));
+	m_Ships.push_back(Ship(4, "Porta-Avião", 5, 1, '5'));
+
+	for (auto i = m_Ships.begin(); i != m_Ships.end(); ++i)
+	{
+		SetTotalHit(i->GetSpace() * i->GetQuantity());
+		SetTotalShip(GetTotalShip() + i->GetQuantity());
+	}
+}
+
+/*
+Board::Board() : m_Board{
+			{' ','A','B','C','D','E','F','G','H','I','J'},
 			{'1','-','-','-','-','-','-','-','-','-','-'},
 			{'2','-','-','-','-','-','-','-','-','-','-'},
 			{'3','-','-','-','-','-','-','-','-','-','-'},
@@ -29,9 +57,9 @@ Board::Board() : m_Board{
 		SetTotalHit(i->GetSpace() * i->GetQuantity());
 		SetTotalShip(GetTotalShip() + i->GetQuantity());
 	}
-	//AddShip();
+	AddShip();
 }
-
+*/
 
 
 void Board::PrintBoard()

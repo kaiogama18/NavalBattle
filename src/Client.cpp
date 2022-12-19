@@ -52,7 +52,7 @@ void recv_handle(SOCKET soc)
 		{
 			std::cout << '\r';
 			std::cout << recvbuf << "\n";
-			std::cout << g_name << ": ";
+			//std::cout << g_name << ": ";
 		}
 		else if (iRecv == 0)
 		{
@@ -92,7 +92,7 @@ void Client::StartClient()
 	// fill server address
 	struct sockaddr_in TCPServerAdd;
 	TCPServerAdd.sin_family = AF_INET;
-	TCPServerAdd.sin_port = htons(8000);
+	TCPServerAdd.sin_port = htons(PORT);
 	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 
 	// connect to server
@@ -104,8 +104,8 @@ void Client::StartClient()
 		WSACleanup();
 		return;
 	}
-
-	std::cout << "Infome seu Nome: ";
+	std::cout << "----- Conectado ao Servidor Batalha Naval!\n";
+	std::cout << "\n\tInfome seu NickName: ";
 	std::getline(std::cin, g_name);
 	std::cout << "\n";
 
@@ -119,8 +119,10 @@ void Client::StartClient()
 		return;
 	}
 
+	/*
 	std::thread senderThread = std::thread(send_handle, clientSoc);
 	senderThread.detach();
+	*/
 
 	std::thread recverThread = std::thread(recv_handle, clientSoc);
 	recverThread.join();
