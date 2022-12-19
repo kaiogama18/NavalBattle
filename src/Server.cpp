@@ -1,19 +1,27 @@
 #include "stdafx.h"
-#pragma comment(lib,"ws2_32.lib")
-#include<winsock2.h>
-#include<iostream>
+#pragma comment(lib, "ws2_32.lib")
+#include <winsock2.h>
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <iostream>
 
 #pragma warning(disable: 4996)
 
 SOCKET Connections[100];
 int Counter = 0;
 
-void ClientHandler(int index)
+enum Packet
 {
-	char msg[256]{};
-	int msg_size{};
-	while (true)
+	P_ChatMessage,
+	P_Test
+};
+
+bool ProcessPacket(int index, Packet packettype)
+{
+	switch (packettype)
 	{
+	case P_ChatMessage:
+	{
+		int msg_size;
 		recv(Connections[index], (char*)&msg_size, sizeof(int), NULL);
 		char* msg = new char[msg_size + 1];
 		msg[msg_size] = '\0';
@@ -24,23 +32,48 @@ void ClientHandler(int index)
 			{
 				continue;
 			}
+
+			Packet msgtype = P_ChatMessage;
+			send(Connections[i], (char*)&msgtype, sizeof(Packet), NULL);
 			send(Connections[i], (char*)&msg_size, sizeof(int), NULL);
 			send(Connections[i], msg, msg_size, NULL);
 		}
+		delete[] msg;
+		break;
 	}
+	default:
+		std::cout << "Unrecognized packet: " << packettype << std::endl;
+		break;
+	}
+
+	return true;
+}
+
+void ClientHandler(int index)
+{
+	Packet packettype;
+	while (true)
+	{
+		recv(Connections[index], (char*)&packettype, sizeof(Packet), NULL);
+
+		if (!ProcessPacket(index, packettype))
+		{
+			break;
+		}
+	}
+	closesocket(Connections[index]);
 }
 
 int main(int argc, char* argv[])
 {
-
+	
 	std::cout << "----- Bem Vindo ao Servidor da Batalha Naval \n";
-	std::cout << "\n \t Esperando jogador \n";
 
-	WSADATA wsadata;
+	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
-	if (WSAStartup(DLLVersion, &wsadata) != 0)
+	if (WSAStartup(DLLVersion, &wsaData) != 0)
 	{
-		std::cout << "Error" << '\n';
+		std::cout << "Error" << std::endl;
 		exit(1);
 	}
 
@@ -52,13 +85,13 @@ int main(int argc, char* argv[])
 
 	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
 	bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
-
 	listen(sListen, SOMAXCONN);
-	listen(sListen, 3);
-
-
 
 	SOCKET newConnection;
+
+	std::cout << "\n \t Esperando jogador \n";
+
+
 	for (int i = 0; i < 100; i++)
 	{
 		newConnection = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
@@ -69,10 +102,13 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			
 			std::cout << "Cliente conectado! \n";
-
 			std::string msg = "\n----- Batalha Naval Online -----\n";
+
 			int msg_size = msg.size();
+			Packet msgtype = P_ChatMessage;
+			send(newConnection, (char*)&msgtype, sizeof(Packet), NULL);
 			send(newConnection, (char*)&msg_size, sizeof(int), NULL);
 			send(newConnection, msg.c_str(), msg_size, NULL);
 
@@ -80,10 +116,12 @@ int main(int argc, char* argv[])
 			Counter++;
 			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
 
+			Packet testpacket = P_Test;
+			send(newConnection, (char*)&testpacket, sizeof(Packet), NULL);
 		}
 	}
+
+
 	system("PAUSE");
 	return 0;
-
 }
-
