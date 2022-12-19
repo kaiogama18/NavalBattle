@@ -1,14 +1,16 @@
 #pragma once
 
+
+#include <iostream>
+#include <thread>
+#include <string>
+#include <WinSock2.h>
+
+#pragma comment (lib, "ws2_32.lib")
+
 class Client
 {
 public:
 	Client();
-
-	void	OutputData(std::string message);
-	void	CleanUp(SOCKET soc);
-	void* send_handle(SOCKET soc);
-	void* recv_handle(SOCKET soc);
-
-	std::string g_name;
+	void StartClient();
 };

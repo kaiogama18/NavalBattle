@@ -1,144 +1,187 @@
-#include "stdafx.h"
-#pragma comment(lib, "ws2_32.lib")
-#include <winsock2.h>
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <iostream>
-#include<thread>
+#include <thread>
+#include <string>
+#include <WinSock2.h>
 
-#include"Utils.h"
-#pragma warning(disable: 4996)
+#pragma comment (lib, "ws2_32.lib")
 
-#define		PORT 1111			// Definição da porta padrão
-#define		BUFFER_SIZE 256		// Definição do tamanho do buffer das mensagens
-SOCKET		Connections[100];	// Definição do número máximo de clientes
-int			Counter = 0;		// Auxiliar para contar o número de clientes
+fd_set master;
 
-
-enum Packet
+void connection_handler(SOCKET soc)
 {
-	P_ChatMessage,
-	//P_Test
-};
+	char clientName[50];
+	ZeroMemory(clientName, 50);
+	recv(soc, clientName, sizeof(clientName), 0);
 
-bool ProcessPacket(int index, Packet packettype)
-{
-	switch (packettype)
+	std::string welcome_message = "Server: Welcome to chat server ";
+	welcome_message = welcome_message + clientName;
+	for (auto i = 0; i < master.fd_count; i++)
 	{
-	case P_ChatMessage:
-	{
-		int msg_size;
-		recv(Connections[index], (char*)&msg_size, sizeof(int), NULL);
-		char* msg = new char[msg_size + 1];
-		msg[msg_size] = '\0';
-		recv(Connections[index], msg, msg_size, NULL);
-		for (int i = 0; i < Counter; i++)
-		{
-			if (i == index)
-			{
-				continue;
-			}
-
-			Packet msgtype = P_ChatMessage;
-			send(Connections[i], (char*)&msgtype, sizeof(Packet), NULL);
-			send(Connections[i], (char*)&msg_size, sizeof(int), NULL);
-			send(Connections[i], msg, msg_size, NULL);
-		}
-		delete[] msg;
-		break;
-	}
-	default:
-		std::cout << "PACKET não reconhecido: " << packettype << std::endl;
-		break;
+		send(master.fd_array[i], welcome_message.c_str(), strlen(welcome_message.c_str()), 0);
 	}
 
-	return true;
-}
+	std::cout << '\r';
+	std::cout << clientName << " connected" << '\n';
+	std::cout << "Server: ";
 
-
-// Maniplidador de cliente
-void ClientHandler(int index)
-{
-	Packet packettype;
 	while (true)
 	{
-		recv(Connections[index], (char*)&packettype, sizeof(Packet), NULL);
+		char recvbuf[512];
+		ZeroMemory(recvbuf, 512);
 
-		if (!ProcessPacket(index, packettype))
+		auto iRecv = recv(soc, recvbuf, sizeof(recvbuf), 0);
+		if (iRecv > 0)
 		{
-			break;
+			std::cout << '\r';
+			std::cout << recvbuf << '\n';
+			std::cout << "Server: ";
+			for (int i = 0; i < master.fd_count; i++)
+			{
+				if (master.fd_array[i] != soc)
+					send(master.fd_array[i], recvbuf, strlen(recvbuf), 0);
+			}
 		}
-	}
-	closesocket(Connections[index]);
-}
-
-int main(int argc, char* argv[])
-{
-	setlocale(LC_ALL, "portuguese");
-	setlocale(LC_ALL, "en_US");
-
-	std::cout << "----- Bem Vindo ao Servidor da Batalha Naval \n";
-
-	// Incializando o servidor e espera pelos os jogadores[Client]
-	WSAData wsaData;
-	WORD DLLVersion = MAKEWORD(2, 1);
-	// Start winsock
-	if (WSAStartup(DLLVersion, &wsaData) != 0)
-	{
-		std::cout << "Error" << std::endl;
-		exit(1);
-	}
-
-	// Criação da estrutura do endereço  
-	SOCKADDR_IN addr;
-	int sizeofaddr = sizeof(addr);
-
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	addr.sin_port = htons(PORT);
-	addr.sin_family = AF_INET;
-
-	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
-	bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
-	listen(sListen, SOMAXCONN);
-
-	SOCKET newConnection;
-
-	std::cout << "\n \t Esperando jogador \n";
-
-
-	for (int i = 0; i < 100; i++)
-	{
-		newConnection = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
-
-		if (newConnection == 0)
+		else if (iRecv == 0)
 		{
-			std::cout << "Error #2\n";
+			FD_CLR(soc, &master);
+			std::cout << '\r';
+			std::cout << "A client disconnected" << '\n';
+			std::cout << "Server: ";
+			// Annouce to others
+			for (int i = 0; i < master.fd_count; i++)
+			{
+				char disconnected_message[] = "Server : A client disconnected";
+				send(master.fd_array[i], disconnected_message, strlen(disconnected_message), 0);
+			}
+			return;
 		}
 		else
 		{
-
-			std::cout << "Cliente conectado! \n";
-			//char buffer[BUFFER_SIZE] = "----- Batalha Naval Online -----";
-			std::string msg = "\n----- Batalha Naval Online -----\n";
-			int msg_size = msg.size();
-			Packet msgtype = P_ChatMessage;
-			
-			send(newConnection, (char*)&msgtype, sizeof(Packet), NULL);
-			send(newConnection, (char*)&msg_size, sizeof(int), NULL);
-			send(newConnection, msg.c_str(), msg_size, NULL);
-			//send(newConnection, buffer, sizeof(buffer), NULL);
-
-			Connections[i] = newConnection;
-			Counter++;
-
-			// Criação da Thread para execultar 2 Thread ao mesmo tempo
-			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
-			//std::thread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
-			//Packet testpacket = P_Test;
-			//send(newConnection, (char*)&testpacket, sizeof(Packet), NULL);
+			FD_CLR(soc, &master);
+			std::cout << '\r';
+			std::cout << "a client receive failed: " << WSAGetLastError() << '\n';
+			std::cout << "Server: ";
+			// Annouce to others
+			for (int i = 0; i < master.fd_count; i++)
+			{
+				char disconnected_message[] = "Server : A client disconnected";
+				send(master.fd_array[i], disconnected_message, strlen(disconnected_message), 0);
+			}
+			return;
 		}
 	}
+}
+
+// multiple client using threads for each client
+void accept_handler(SOCKET soc)
+{
+	while (true)
+	{
+		auto acceptSoc = ::accept(soc, nullptr, nullptr);
+		if (acceptSoc == INVALID_SOCKET)
+		{
+			std::cout << '\r';
+			std::cout << "accept error: " << WSAGetLastError() << '\n';
+			std::cout << "Server: ";
+			closesocket(acceptSoc);
+		}
+		else
+		{
+			std::thread newCon = std::thread(connection_handler, acceptSoc);
+			newCon.detach();
+			FD_SET(acceptSoc, &master);
+		}
+	}
+}
+
+void send_handler(SOCKET soc)
+{
+	std::string data;
+
+	do
+	{
+		std::cout << "Server: ";
+		getline(std::cin, data);
+		data = "Server: " + data;
+		for (auto i = 0; i < master.fd_count; i++)
+		{
+			auto result = send(master.fd_array[i], data.c_str(), strlen(data.c_str()), 0);
+			if (result == SOCKET_ERROR)
+			{
+				std::cout << '\r';
+				std::cout << "send to client " << i << " failed: " << WSAGetLastError() << '\n';
+				std::cout << "Server: ";
+				return;
+			}
+		}
+	} while (data.size() > 0);
+}
+
+void OutputData(std::string message)
+{
+	std::cout << message << "\n";
+}
+
+void StartServer()
+{
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	{
+		OutputData("WSAStartup failed");
+		return;
+	}
+	OutputData("WSAStartup successfull");
+
+	auto serverSoc = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (serverSoc == INVALID_SOCKET)
+	{
+		OutputData("Socket creation failed");
+		return;
+	}
+	OutputData("Socket creation successfull");
+
+	// fill server address
+	struct sockaddr_in TCPServerAdd;
+	TCPServerAdd.sin_family = AF_INET;
+	TCPServerAdd.sin_port = htons(8000);
+	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
+	auto result = bind(serverSoc, (sockaddr*)&TCPServerAdd, sizeof(TCPServerAdd));
+	if (result == SOCKET_ERROR)
+	{
+		OutputData("listen failed");
+
+		closesocket(serverSoc);
+		WSACleanup();
+
+		return;
+	}
+	OutputData("bind successfull");
+
+	result = listen(serverSoc, SOMAXCONN);
+	if (result == SOCKET_ERROR)
+	{
+		OutputData("listen failed");
+		closesocket(serverSoc);
+		WSACleanup();
 
 
-	system("PAUSE");
-	return 0;
+		return;
+	}
+	OutputData("listen successfull");
+
+	std::thread acceptThread = std::thread(accept_handler, serverSoc);
+	//acceptThread.detach();
+	acceptThread.join();
+
+	//std::thread sendThread = std::thread(send_handler, serverSoc);
+	//sendThread.join();
+
+	closesocket(serverSoc);
+	WSACleanup();
+}
+
+int main()
+{
+	StartServer();
 }

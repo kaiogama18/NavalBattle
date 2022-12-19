@@ -1,89 +1,25 @@
-#include "Client.h"
+#include"Client.h"
 
+#include "stdafx.h"
+#pragma comment (lib, "ws2_32.lib")
+#include <WinSock2.h>
 #include <iostream>
+
 #include <thread>
 #include <string>
-#include <WinSock2.h>
 
-#pragma comment (lib, "ws2_32.lib")
 
+#define		PORT 1111			// Definição da porta padrão
+#define		BUFFER_SIZE 256		// Definição do tamanho do buffer das mensagens
+SOCKET		Connections[100];	// Definição do número máximo de clientes
+int			Counter = 0;		// Auxiliar para contar o número de clientes
+std::string g_name;
 
 Client::Client()
 {
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-	{
-		OutputData("WSAStartup failed");
-		return;
-	}
-	OutputData("WSAStartup successfull");
-
-	auto clientSoc = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (clientSoc == INVALID_SOCKET)
-	{
-		OutputData("Socket creation failed");
-		CleanUp(clientSoc);
-		return;
-	}
-	OutputData("Socket creation successfull");
-
-	// fill server address
-	struct sockaddr_in TCPServerAdd;
-	TCPServerAdd.sin_family = AF_INET;
-	TCPServerAdd.sin_port = htons(8000);
-	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
-
-	// connect to server
-	auto iConnect = connect(clientSoc, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
-	if (iConnect == SOCKET_ERROR)
-	{
-		OutputData("connect failed");
-		CleanUp(clientSoc);
-		return;
-	}
-	OutputData("Connect successfull");
-
-	std::cout << "How do we call you, Your name please!";
-	std::getline(std::cin, g_name);
-	std::cout << "\n";
-
-	auto iSend = send(clientSoc, g_name.c_str(), strlen(g_name.c_str()), 0);
-	if (iSend == SOCKET_ERROR)
-	{
-		std::cout << "Sending Failed " << "\n";
-		std::cout << "Error No-> " << WSAGetLastError() << "\n";
-		CleanUp(clientSoc);
-		return;
-	}
-
-	std::thread senderThread = std::thread(&send_handle, clientSoc);
-	senderThread.detach();
-
-	std::thread recverThread = std::thread(&recv_handle, clientSoc);
-	recverThread.join();
-
-	CleanUp(clientSoc);
 }
 
-
-
-
-
-
-
-
-void Client::OutputData(std::string message)
-{
-	std::cout << message << "\n";
-}
-
-void Client::CleanUp(SOCKET soc)
-{
-	closesocket(soc);
-	WSACleanup();
-}
-
-void * Client::send_handle(SOCKET soc)
+void send_handle(SOCKET soc)
 {
 	std::string data;
 	do
@@ -96,7 +32,8 @@ void * Client::send_handle(SOCKET soc)
 			if (send(soc, data.c_str(), strlen(data.c_str()), 0) == SOCKET_ERROR)
 			{
 				std::cout << "send failed: " << WSAGetLastError() << "\n";
-				CleanUp(soc);
+				closesocket(soc);
+				WSACleanup();
 				std::getchar();
 				return;
 			}
@@ -104,7 +41,7 @@ void * Client::send_handle(SOCKET soc)
 	} while (data.size() > 0);
 }
 
-void * Client::recv_handle(SOCKET soc)
+void recv_handle(SOCKET soc)
 {
 	while (true)
 	{
@@ -125,10 +62,69 @@ void * Client::recv_handle(SOCKET soc)
 		else
 		{
 			std::cout << "recv failed: " << WSAGetLastError() << "\n";
-			CleanUp(soc);
+			closesocket(soc);
+			WSACleanup();
 			std::getchar();
 			return;
 		}
 	}
 }
 
+
+void Client::StartClient()
+{
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	{
+		std::cout << "WSADATA ERROR : Error no winsock." << "\n";
+		return;
+	}
+
+	auto clientSoc = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (clientSoc == INVALID_SOCKET)
+	{
+		std::cout << "Error: falha na conexão ( Falha na criação do Socket )" << "\n";
+		closesocket(clientSoc);
+		WSACleanup();
+		return;
+	}
+
+	// fill server address
+	struct sockaddr_in TCPServerAdd;
+	TCPServerAdd.sin_family = AF_INET;
+	TCPServerAdd.sin_port = htons(8000);
+	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
+	// connect to server
+	auto iConnect = connect(clientSoc, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
+	if (iConnect == SOCKET_ERROR)
+	{
+		std::cout << "Error: falha na conexão" << "\n";
+		closesocket(clientSoc);
+		WSACleanup();
+		return;
+	}
+
+	std::cout << "Infome seu Nome: ";
+	std::getline(std::cin, g_name);
+	std::cout << "\n";
+
+	auto iSend = send(clientSoc, g_name.c_str(), strlen(g_name.c_str()), 0);
+	if (iSend == SOCKET_ERROR)
+	{
+		std::cout << "Sending Failed " << "\n";
+		std::cout << "Error No-> " << WSAGetLastError() << "\n";
+		closesocket(clientSoc);
+		WSACleanup();
+		return;
+	}
+
+	std::thread senderThread = std::thread(send_handle, clientSoc);
+	senderThread.detach();
+
+	std::thread recverThread = std::thread(recv_handle, clientSoc);
+	recverThread.join();
+
+	closesocket(clientSoc);
+	WSACleanup();
+}
