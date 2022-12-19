@@ -4,10 +4,14 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <iostream>
 
+#include"Utils.h"
 #pragma warning(disable: 4996)
 
-SOCKET Connections[100];
-int Counter = 0;
+#define		PORT 1111			// Definição da porta padrão
+#define		BUFFER_SIZE 256		// Definição do tamanho do buffer das mensagens
+SOCKET		Connections[100];	// Definição do número máximo de clientes
+int			Counter = 0;		// Auxiliar para contar o número de clientes
+
 
 enum Packet
 {
@@ -42,13 +46,15 @@ bool ProcessPacket(int index, Packet packettype)
 		break;
 	}
 	default:
-		std::cout << "Unrecognized packet: " << packettype << std::endl;
+		std::cout << "PACKET não reconhecido: " << packettype << std::endl;
 		break;
 	}
 
 	return true;
 }
 
+
+// Maniplidador de cliente
 void ClientHandler(int index)
 {
 	Packet packettype;
@@ -66,21 +72,27 @@ void ClientHandler(int index)
 
 int main(int argc, char* argv[])
 {
-	
+	setlocale(LC_ALL, "portuguese");
+	setlocale(LC_ALL, "en_US");
+
 	std::cout << "----- Bem Vindo ao Servidor da Batalha Naval \n";
 
+	// Incializando o servidor e espera pelos os jogadores[Client]
 	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
+	// Start winsock
 	if (WSAStartup(DLLVersion, &wsaData) != 0)
 	{
 		std::cout << "Error" << std::endl;
 		exit(1);
 	}
 
+	// Criação da estrutura do endereço  
 	SOCKADDR_IN addr;
 	int sizeofaddr = sizeof(addr);
+
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	addr.sin_port = htons(1111);
+	addr.sin_port = htons(PORT);
 	addr.sin_family = AF_INET;
 
 	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
@@ -102,7 +114,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			
+
 			std::cout << "Cliente conectado! \n";
 			std::string msg = "\n----- Batalha Naval Online -----\n";
 
@@ -114,6 +126,8 @@ int main(int argc, char* argv[])
 
 			Connections[i] = newConnection;
 			Counter++;
+
+			// Criação da Thread para execultar 2 Thread ao mesmo tempo
 			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
 
 			Packet testpacket = P_Test;

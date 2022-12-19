@@ -8,6 +8,7 @@
 
 #include "NavalBattle.h"
 
+#define		PORT 1111	
 SOCKET Connection;
 
 enum Packet
@@ -63,23 +64,25 @@ int main(int argc, char* argv[])
 	setlocale(LC_ALL, "portuguese");
 	setlocale(LC_ALL, "en_US");
 
-
-
-
 	WSAData wsaData;
+	
 	WORD DLLVersion = MAKEWORD(2, 1);
+	// Start winsock
 	if (WSAStartup(DLLVersion, &wsaData) != 0)
 	{
-		std::cout << "Error" << std::endl;
+		std::cout << "WSADATA ERROR : Error no winsock." << std::endl;
 		exit(1);
 	}
 
+	// Criação da estrutura do endereço  
 	SOCKADDR_IN addr;
 	int sizeofaddr = sizeof(addr);
+	
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	addr.sin_port = htons(1111);
+	addr.sin_port = htons(PORT);
 	addr.sin_family = AF_INET;
 
+	//Criação de um soquete escuta para o servidor
 	Connection = socket(AF_INET, SOCK_STREAM, NULL);
 	if (connect(Connection, (SOCKADDR*)&addr, sizeof(addr)) != 0)
 	{
@@ -88,6 +91,7 @@ int main(int argc, char* argv[])
 	}
 	std::cout << "Conectado ao Servidor Batalha Naval com Sucesso!\n";
 
+	// 
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, NULL, NULL, NULL);
 
 	std::string msg1;
