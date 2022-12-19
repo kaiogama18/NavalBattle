@@ -22,7 +22,7 @@ void connection_handler(SOCKET soc)
 
 	std::cout << '\r';
 	std::cout << clientName << " connected" << '\n';
-	std::cout << "Server: ";
+	//std::cout << "Server: ";
 
 	while (true)
 	{
@@ -34,7 +34,7 @@ void connection_handler(SOCKET soc)
 		{
 			std::cout << '\r';
 			std::cout << recvbuf << '\n';
-			std::cout << "Server: ";
+			//std::cout << "Server: ";
 			for (int i = 0; i < master.fd_count; i++)
 			{
 				if (master.fd_array[i] != soc)
@@ -46,7 +46,7 @@ void connection_handler(SOCKET soc)
 			FD_CLR(soc, &master);
 			std::cout << '\r';
 			std::cout << "A client disconnected" << '\n';
-			std::cout << "Server: ";
+			//std::cout << "Server: ";
 			// Annouce to others
 			for (int i = 0; i < master.fd_count; i++)
 			{
@@ -60,7 +60,7 @@ void connection_handler(SOCKET soc)
 			FD_CLR(soc, &master);
 			std::cout << '\r';
 			std::cout << "a client receive failed: " << WSAGetLastError() << '\n';
-			std::cout << "Server: ";
+			//std::cout << "Server: ";
 			// Annouce to others
 			for (int i = 0; i < master.fd_count; i++)
 			{
@@ -82,7 +82,7 @@ void accept_handler(SOCKET soc)
 		{
 			std::cout << '\r';
 			std::cout << "accept error: " << WSAGetLastError() << '\n';
-			std::cout << "Server: ";
+			//std::cout << "Server: ";
 			closesocket(acceptSoc);
 		}
 		else
@@ -94,6 +94,7 @@ void accept_handler(SOCKET soc)
 	}
 }
 
+/*
 void send_handler(SOCKET soc)
 {
 	std::string data;
@@ -116,6 +117,7 @@ void send_handler(SOCKET soc)
 		}
 	} while (data.size() > 0);
 }
+*/
 
 void OutputData(std::string message)
 {
