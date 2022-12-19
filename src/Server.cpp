@@ -1,76 +1,43 @@
 #include "Server.h"
-
-
+#include "stdafx.h"
+#pragma comment(lib,"ws2_32.lib")
 #include<winsock2.h>
-#include<WS2tcpip.h>
-#include <tchar.h>
 #include<iostream>
+
+#pragma warning(disable: 4996)
 
 Server::Server() {};
 
 int Server::JoinServer()
 {
-	// -------------------------------------------- Step 1 - Set up DLL 
-	//std::cout << "\n===== Step 1 - Set up DLL" << "\n\n";
-	SOCKET clientSocket;
-	int port = 55555;
-	WSADATA wsaData;
-	int wsaerr;
-
-	WORD wVersionRequested = MAKEWORD(2, 2);
-	wsaerr = WSAStartup(wVersionRequested, &wsaData);
-
-	if (wsaerr != 0)
+	WSADATA wsadata;
+	WORD DLLVersion = MAKEWORD(2, 1);
+	if (WSAStartup(DLLVersion, &wsadata) != 0)
 	{
-		std::cout << "The Winsock dll not found" << '\n';
-		return 0;
-	}
-	else
-	{
-		std::cout << "The Winsock dll found!" << '\n';
-		std::cout << "Status: " << wsaData.szSystemStatus << '\n';
+		std::cout << "Error" << '\n';
+		exit(1);
 	}
 
+	SOCKADDR_IN addr;
+	int sizeofaddr = sizeof(addr);
+	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	addr.sin_port = htons(1111);
+	addr.sin_family = AF_INET;
 
-	// -------------------------------------------- Step 2 - Set up Server Socket  
-	//std::cout << "\n===== Step 2 - Set up Server Socket" << "\n\n";
-	clientSocket = INVALID_SOCKET;
-	clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	if (clientSocket == INVALID_SOCKET)
+	SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
+	if (connect(Connection, (SOCKADDR*)&addr, sizeof(addr)))
 	{
-		std::cout << "Error at socket(): " << WSAGetLastError() << '\n';
-		WSACleanup;
-		return 0;
-	}
-	else
-	{
-		std::cout << "socket() is OK!" << '\n';
-	}
-
-	// -------------------------------------------- Step 3 - Connect with Server 
-	std::cout << "\n===== Step 3 - Connect with Server " << "\n\n";
-
-	sockaddr_in clientService;
-	clientService.sin_family = AF_INET;
-	InetPton(AF_INET, _T("127.0.0.1"), &clientService.sin_addr.s_addr);
-	clientService.sin_port = htons(port);
-
-	if (connect(clientSocket, (SOCKADDR*)&clientService, sizeof(clientService)) == SOCKET_ERROR)
-	{
-		std::cout << "Client: connect() - Failed to connect " << WSAGetLastError() << '\n';
-		WSACleanup();
-		return 0;
-	}
-	else
-	{
-		std::cout << "Client: connect() is OK" << '\n';
-		std::cout << "Client: Cand start sending and receiving data..." << '\n';
+		std::cout << "Error: Failed connect to server. \n";
 		return 1;
 	}
-	system("pause");
-	WSACleanup();
+	std::cout << "Connected!\n";
 
+	char msg[256]{};
+	recv(Connection, msg, sizeof(msg), NULL);
+	std::cout << msg << '\n';
+
+	system("PAUSE");
+	return 0;
 
 }
 

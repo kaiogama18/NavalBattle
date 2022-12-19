@@ -37,6 +37,10 @@ int main(int argc, char* argv[])
 	else
 	{
 		std::cout << "Client Connected! \n";
+
+		char msg[256] = "Hello. It's my first network program";
+		send(newConnection, msg, sizeof(msg), NULL);
+
 	}
 	system("PAUSE");
 	return 0;
