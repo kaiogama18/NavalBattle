@@ -10,15 +10,8 @@ NavalBattle::NavalBattle()
 	m_Player = new Player;
 	m_Player->SetHealth();
 	//std::cout << "\n Minha vida: " << m_Player->GetHealth();
-
-
 	//std::thread mythread()
-
-
-
-	
 	//m_Player->PrintBoard();
-
 	//m_Player->AddShip(m_Player->m_Health);
 	//m_Player->PrintBoard();
 	 //mainPlayer;
