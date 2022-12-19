@@ -5,18 +5,17 @@
 #include <mutex>
 
 #include"Player.h"
+#include"Client.h"
 
 class NavalBattle
 {
 public:
 	NavalBattle();
-	//void PlaceShips();
-	void Run();
+	
+	const void Menu();
 
 private:
-
+	
+	Client* m_Client;
 	Player* m_Player;
-	//int P, N;
-	//std::mutex mtx;
-	//std::vector<std::thread*>* threads = new std::vector<std::thread*>;
 };

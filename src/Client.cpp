@@ -104,7 +104,8 @@ void Client::StartClient()
 		WSACleanup();
 		return;
 	}
-	std::cout << "----- Conectado ao Servidor Batalha Naval!\n";
+	std::cin.clear();
+	std::cout << "-----> Conectado ao Servidor Batalha Naval!\n";
 	std::cout << "\n\tInfome seu NickName: ";
 	std::getline(std::cin, g_name);
 	std::cout << "\n";
