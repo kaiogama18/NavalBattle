@@ -3,6 +3,7 @@
 #include <winsock2.h>
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <iostream>
+#include<thread>
 
 #include"Utils.h"
 #pragma warning(disable: 4996)
@@ -16,7 +17,7 @@ int			Counter = 0;		// Auxiliar para contar o número de clientes
 enum Packet
 {
 	P_ChatMessage,
-	P_Test
+	//P_Test
 };
 
 bool ProcessPacket(int index, Packet packettype)
@@ -116,22 +117,24 @@ int main(int argc, char* argv[])
 		{
 
 			std::cout << "Cliente conectado! \n";
+			//char buffer[BUFFER_SIZE] = "----- Batalha Naval Online -----";
 			std::string msg = "\n----- Batalha Naval Online -----\n";
-
 			int msg_size = msg.size();
 			Packet msgtype = P_ChatMessage;
+			
 			send(newConnection, (char*)&msgtype, sizeof(Packet), NULL);
 			send(newConnection, (char*)&msg_size, sizeof(int), NULL);
 			send(newConnection, msg.c_str(), msg_size, NULL);
+			//send(newConnection, buffer, sizeof(buffer), NULL);
 
 			Connections[i] = newConnection;
 			Counter++;
 
 			// Criação da Thread para execultar 2 Thread ao mesmo tempo
 			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
-
-			Packet testpacket = P_Test;
-			send(newConnection, (char*)&testpacket, sizeof(Packet), NULL);
+			//std::thread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
+			//Packet testpacket = P_Test;
+			//send(newConnection, (char*)&testpacket, sizeof(Packet), NULL);
 		}
 	}
 

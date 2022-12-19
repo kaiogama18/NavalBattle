@@ -8,14 +8,19 @@
 
 #include "NavalBattle.h"
 
-#define		PORT 1111	
+#define		PORT 1111			// Definição da porta padrão
+#define		BUFFER_SIZE 256		// Definição do tamanho do buffer das mensagens
+SOCKET		Connections[100];	// Definição do número máximo de clientes
+int			Counter = 0;		// Auxiliar para contar o número de clientes
+
 SOCKET Connection;
 
 enum Packet
 {
 	P_ChatMessage,
-	P_Test
+	//P_Test
 };
+
 
 bool ProcessPacket(Packet packettype)
 {
@@ -32,11 +37,11 @@ bool ProcessPacket(Packet packettype)
 		delete[] msg;
 		break;
 	}
-	case P_Test:
-		std::cout << "Test packet.\n";
-		break;
+	//case P_Test:
+	//	std::cout << "Teste packet.\n";
+	//	break;
 	default:
-		std::cout << "Unrecognized packet: " << packettype << std::endl;
+		std::cout << "PACKET não reconhecido: " << packettype << std::endl;
 		break;
 	}
 
@@ -91,22 +96,26 @@ int main(int argc, char* argv[])
 	}
 	std::cout << "Conectado ao Servidor Batalha Naval com Sucesso!\n";
 
-	// 
+	
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, NULL, NULL, NULL);
 
 	std::string msg1;
+	/*
 	while (true)
 	{
 		std::getline(std::cin, msg1);
-		int msg_size = msg1.size();
+		size_t msg_size = msg1.size();
 		Packet packettype = P_ChatMessage;
 		send(Connection, (char*)&packettype, sizeof(Packet), NULL);
 		send(Connection, (char*)&msg_size, sizeof(int), NULL);
 		send(Connection, msg1.c_str(), msg_size, NULL);
 		Sleep(10);
 	}
+	*/
 
-	//NavalBattle navalBattle;
+	NavalBattle navalBattle;
+
+	navalBattle.Run();
 	system("PAUSE");
 	return 0;
 }
