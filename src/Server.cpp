@@ -10,24 +10,32 @@ int Counter = 0;
 
 void ClientHandler(int index)
 {
-	char msg[256];
+	char msg[256]{};
+	int msg_size{};
 	while (true)
 	{
-		recv(Connections[index], msg, sizeof(msg), NULL);
+		recv(Connections[index], (char*)&msg_size, sizeof(int), NULL);
+		char* msg = new char[msg_size + 1];
+		msg[msg_size] = '\0';
+		recv(Connections[index], msg, msg_size, NULL);
 		for (int i = 0; i < Counter; i++)
 		{
 			if (i == index)
 			{
 				continue;
 			}
-
-			send(Connections[i], msg, sizeof(msg), NULL);
+			send(Connections[i], (char*)&msg_size, sizeof(int), NULL);
+			send(Connections[i], msg, msg_size, NULL);
 		}
 	}
 }
 
 int main(int argc, char* argv[])
 {
+
+	std::cout << "----- Bem Vindo ao Servidor da Batalha Naval \n";
+	std::cout << "\n \t Esperando jogador \n";
+
 	WSADATA wsadata;
 	WORD DLLVersion = MAKEWORD(2, 1);
 	if (WSAStartup(DLLVersion, &wsadata) != 0)
@@ -48,6 +56,8 @@ int main(int argc, char* argv[])
 	listen(sListen, SOMAXCONN);
 	listen(sListen, 3);
 
+
+
 	SOCKET newConnection;
 	for (int i = 0; i < 100; i++)
 	{
@@ -59,10 +69,12 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			std::cout << "Client Connected! \n";
+			std::cout << "Cliente conectado! \n";
 
-			char msg[256] = "Hello. It's my first network program";
-			send(newConnection, msg, sizeof(msg), NULL);
+			std::string msg = "\n----- Batalha Naval Online -----\n";
+			int msg_size = msg.size();
+			send(newConnection, (char*)&msg_size, sizeof(int), NULL);
+			send(newConnection, msg.c_str(), msg_size, NULL);
 
 			Connections[i] = newConnection;
 			Counter++;
