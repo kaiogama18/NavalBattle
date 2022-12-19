@@ -6,7 +6,9 @@
 #pragma comment (lib, "ws2_32.lib")
 fd_set master;			
 
-void connection_handler(SOCKET connection)
+
+
+void ConnectionHandler(SOCKET connection)
 {
 	char nickname[50];
 	ZeroMemory(nickname, 50);
@@ -18,7 +20,22 @@ void connection_handler(SOCKET connection)
 	{
 		send(master.fd_array[i], welcome_message.c_str(), strlen(welcome_message.c_str()), 0);
 	}
-	std::cout << "\n-----> Jogador(a): [ " << nickname << " ] entrou no Servidor!" << '\n';
+	std::cout << "\n-----> Jogador(a) ["<< master.fd_count <<"]: [ " << nickname << " ] entrou no Servidor!" << '\n';
+
+	if (master.fd_count == 2)
+	{
+		
+		
+		//SOCKET s1 = game->getSocketOfPlayer(1);
+		//SOCKET s2 = game->getSocketOfPlayer(2);
+
+		//std::string player1;
+		//std::string player2;
+		
+
+
+	}
+
 	while (true)
 	{
 		char recvbuf[512];
@@ -72,7 +89,7 @@ void accept_handler(SOCKET connection)
 		}
 		else
 		{
-			std::thread newCon = std::thread(connection_handler, acceptSoc);
+			std::thread newCon = std::thread(ConnectionHandler, acceptSoc);
 			newCon.detach();
 			FD_SET(acceptSoc, &master);
 		}
