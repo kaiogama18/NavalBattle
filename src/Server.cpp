@@ -1,146 +1,107 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <string>
 #include <WinSock2.h>
-
+#include <vector>
+#include <mutex>
+#include <condition_variable>
 #pragma comment (lib, "ws2_32.lib")
-fd_set master;			
 
-
-
-void ConnectionHandler(SOCKET connection)
+fd_set master; // para colocar soquetes em um conjunto.
+ 
+// Thread para tratar o Cliente
+void ConnectionHandler(SOCKET cliente)
 {
 	char nickname[50];
 	ZeroMemory(nickname, 50);
-	recv(connection, nickname, sizeof(nickname), 0);
+	recv(cliente, nickname, sizeof(nickname), 0);
 
-	std::string welcome_message = "-----> Bem vindo ao Servidor Batalha Naval ";
-	welcome_message = welcome_message + nickname;
+	std::string message = "-----> Bem vindo ao Servidor Batalha Naval ";
+	message = message + nickname;
 	for (auto i = 0; i < master.fd_count; i++)
 	{
-		send(master.fd_array[i], welcome_message.c_str(), strlen(welcome_message.c_str()), 0);
-	}
-	std::cout << "\n-----> Jogador(a) ["<< master.fd_count <<"]: [ " << nickname << " ] entrou no Servidor!" << '\n';
-
-	if (master.fd_count == 2)
-	{
-		
-		
-		//SOCKET s1 = game->getSocketOfPlayer(1);
-		//SOCKET s2 = game->getSocketOfPlayer(2);
-
-		//std::string player1;
-		//std::string player2;
-		
-
-
+		send(master.fd_array[i], message.c_str(), strlen(message.c_str()), 0);
 	}
 
-	while (true)
-	{
-		char recvbuf[512];
-		ZeroMemory(recvbuf, 512);
-
-		auto iRecv = recv(connection, recvbuf, sizeof(recvbuf), 0);
-		if (iRecv > 0)
-		{
-			std::cout << recvbuf << '\n';
-			for (int i = 0; i < master.fd_count; i++)
-			{
-				if (master.fd_array[i] != connection)
-					send(master.fd_array[i], recvbuf, strlen(recvbuf), 0);
-			}
-		}
-		else if (iRecv == 0)
-		{
-			FD_CLR(connection, &master);
-			std::cout << "A client disconnected" << '\n';
-			for (int i = 0; i < master.fd_count; i++)
-			{
-				char disconnected_message[] = "Server : A client disconnected";
-				send(master.fd_array[i], disconnected_message, strlen(disconnected_message), 0);
-			}
-			return;
-		}
-		else
-		{
-			FD_CLR(connection, &master);
-			std::cout << "a client receive failed: " << WSAGetLastError() << '\n';
-			for (int i = 0; i < master.fd_count; i++)
-			{
-				char disconnected_message[] = "Server : A client disconnected";
-				send(master.fd_array[i], disconnected_message, strlen(disconnected_message), 0);
-			}
-			return;
-		}
-	}
+	std::cout << "\n-----> Jogador(a) [" << master.fd_count << "]: [ " << nickname << " ] entrou no Servidor!" << '\n';
 }
 
-// multiple client using threads for each client
-void accept_handler(SOCKET connection)
+// Para varias chamadas de clientes usando threads
+void AcceptHandler(SOCKET connection)
 {
 	while (true)
 	{
-		auto acceptSoc = ::accept(connection, nullptr, nullptr);
-		if (acceptSoc == INVALID_SOCKET)
+		// SOCKET client -> Pegando o endereço da estrutura
+		auto cliente = ::accept(connection, nullptr, nullptr);
+		if (cliente == INVALID_SOCKET)
 		{
-			std::cout << "accept error: " << WSAGetLastError() << '\n';
-			closesocket(acceptSoc);
+			std::cout << "Error: " << WSAGetLastError() << '\n';
+			closesocket(cliente);
 		}
 		else
 		{
-			std::thread newCon = std::thread(ConnectionHandler, acceptSoc);
-			newCon.detach();
-			FD_SET(acceptSoc, &master);
+			// Chamando a thread ConnectionHandler -> Ler a tratar o Cliente 
+			std::thread connectionHandler = std::thread(ConnectionHandler, cliente);
+			connectionHandler.detach();
+			FD_SET(cliente, &master); // para colocar soquetes em um conjunto.t 
 		}
 	}
 }
 
 void StartServer()
 {
-	WSADATA wsaData;
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+
+	WSADATA version;
+
+	// Função para inicialização para o windows
+	if (WSAStartup(MAKEWORD(2, 2), &version) != 0)
 	{
 		std::cout << "WSADATA ERROR : Error no winsock. " << '\n';
 		return;
 	}
 	std::cout << " WSAStartup OK!\n";
-	auto sListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sListen == INVALID_SOCKET)
+
+	auto servidor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (servidor == INVALID_SOCKET)
 	{
-		std::cout << " Error: Falhou na cria��p do Socket ! \n";
+		std::cout << " Error: Falhou na criação do Socket ! \n";
 		return;
 	}
 	std::cout << " Socket criado com sucesso! \n";
-	// Cria��o da estrutura do endere�o  
-	struct sockaddr_in TCPServerAdd;
-	TCPServerAdd.sin_family = AF_INET;
-	TCPServerAdd.sin_port = htons(1111);
-	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 
-	auto result = bind(sListen, (sockaddr*)&TCPServerAdd, sizeof(TCPServerAdd));
+
+	// Criação da estrutura do endereço //
+	struct sockaddr_in servidorAddr;								// Estrura para qual conectar
+	servidorAddr.sin_family = AF_INET;								// Ip versão 4
+	servidorAddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");		// Identifica o endereço do servidor em bit
+	servidorAddr.sin_port = htons(1111);							// Qual a porta que o servidor vai usar 
+
+	// Conexão com servidor //
+	auto result = bind(servidor, (sockaddr*)&servidorAddr, sizeof(servidorAddr));
 	if (result == SOCKET_ERROR)
 	{
 		std::cout << " Error: Listen falhou \n";
-		closesocket(sListen);
+		closesocket(servidor);
 		WSACleanup();
 		return;
 	}
 
-	result = listen(sListen, SOMAXCONN);
+	// listen : Permite ficar ouvindo se alguem solicitar conexão
+	result = listen(servidor, SOMAXCONN);
 	if (result == SOCKET_ERROR)
 	{
 		std::cout << " Error: Listen falhou \n";
-		closesocket(sListen);
+		closesocket(servidor);
 		WSACleanup();
 		return;
 	}
 	std::cout << " Esperando Jogador! \n";
-	std::thread acceptThread = std::thread(accept_handler, sListen);
-	//acceptThread.detach();
+
+	// Thread para aceitar cliente
+	std::thread acceptThread = std::thread(AcceptHandler, servidor);
 	acceptThread.join();
 
-	closesocket(sListen);
+	closesocket(servidor);
 	WSACleanup();
 }
 

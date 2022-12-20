@@ -4,8 +4,6 @@
 #include "Player.h"
 #include "Client.h"
 
-
-
 NavalBattle::NavalBattle() : m_Client{}
 {
 	std::cout << " ----- [ BATALHA NAVAL ONLINE ] ----- \n";
@@ -14,22 +12,13 @@ NavalBattle::NavalBattle() : m_Client{}
 
 };
 
-/*
-void NavalBattle::Run()
-{
-	std::pair<int, int> m_Coordinates;
-	std::cout << "\n Informe as COORDENADAS para atacar: \n";
-	std::cin >> m_Coordinates.first;
-	std::cin >> m_Coordinates.second;
-
-
-}
-*/
-
-const void NavalBattle::Menu() 
+const void NavalBattle::Menu()
 {
 	int op;
 	std::string nickName;
+
+	std::cout << "\n oiioi" << m_Player->GetHealth();
+
 
 	std::cout << "\n ----- [ MENU ]\n\n";
 	std::cout << R"( 1 - Entrar no Servidor
@@ -46,17 +35,19 @@ const void NavalBattle::Menu()
 		std::cin.ignore();
 		m_Client = new Client;
 		m_Client->StartClient();
-		//Menu();
 		break;
 	case 2:
-		std::cout << "\n Informe a opção: ";
+		std::cout << "\n Cadastra Navios ";
+		break;
+
 	case 3:
-		std::cout << "\n Informe a opção: ";
+		m_Player->PrintBoard();
+		break;
+	case 0:
+		break;
 	default:
 		break;
 	}
-
-
 
 }
 

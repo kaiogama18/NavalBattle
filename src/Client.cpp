@@ -19,7 +19,7 @@ Client::Client()
 {
 }
 
-void send_handle(SOCKET soc)
+void SendHandle(SOCKET soc)
 {
 	std::string data;
 	do
@@ -41,7 +41,7 @@ void send_handle(SOCKET soc)
 	} while (data.size() > 0);
 }
 
-void recv_handle(SOCKET soc)
+void RecvHandle(SOCKET soc)
 {
 	while (true)
 	{
@@ -52,7 +52,7 @@ void recv_handle(SOCKET soc)
 		{
 			std::cout << '\r';
 			std::cout << recvbuf << "\n";
-			//std::cout << g_name << ": ";
+			std::cout << g_name << ": ";
 		}
 		else if (iRecv == 0)
 		{
@@ -120,13 +120,17 @@ void Client::StartClient()
 		return;
 	}
 
+
+
+
+
 	/*
 	std::thread senderThread = std::thread(send_handle, clientSoc);
 	senderThread.detach();
-	*/
 
 	std::thread recverThread = std::thread(recv_handle, clientSoc);
 	recverThread.join();
+	*/
 
 	closesocket(clientSoc);
 	WSACleanup();
