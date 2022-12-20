@@ -7,7 +7,7 @@
 #pragma comment (lib, "ws2_32.lib")
 
 SOCKET		Connections[100];			// Definição do número máximo de clientes
-int			Counter = 1;				// Auxiliar para contar o número de clientes
+int			Counter = 0;				// Auxiliar para contar o número de clientes
 fd_set		master;						// para colocar soquetes em um conjunto.
 
 // Thread para tratar o Cliente //
@@ -22,6 +22,9 @@ void ConnectionHandler(int index)
 
 	send(Connections[index], message.c_str(), strlen(message.c_str()), 0);
 	std::cout << "\n-----> Jogador(a) [" << index << "]: [ " << nickname << " ] entrou no Servidor!" << '\n';
+
+	if (index > 0 && index < 2)
+		std::cout << "----- Começou o jogo -----\n\n";
 }
 
 // Para varias chamadas de clientes usando threads //
