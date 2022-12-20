@@ -8,18 +8,16 @@
 #include <thread>
 #include <string>
 
-
 #define		PORT 1111			// Definição da porta padrão
-#define		BUFFER_SIZE 256		// Definição do tamanho do buffer das mensagens
-SOCKET		Connections[100];	// Definição do número máximo de clientes
-int			Counter = 0;		// Auxiliar para contar o número de clientes
+#define		BUFFER_SIZE 512		// Definição do tamanho do buffer das mensagens
+
 std::string g_name;
 
 Client::Client()
 {
 }
 
-void SendHandle(SOCKET soc)
+void SendHandle(SOCKET Connection)
 {
 	std::string data;
 	do
@@ -29,32 +27,30 @@ void SendHandle(SOCKET soc)
 		if (data.size() > 0)
 		{
 			data = g_name + ": " + data;
-			if (send(soc, data.c_str(), strlen(data.c_str()), 0) == SOCKET_ERROR)
+			if (send(Connection, data.c_str(), strlen(data.c_str()), 0) == SOCKET_ERROR)
 			{
 				std::cout << "send failed: " << WSAGetLastError() << "\n";
-				closesocket(soc);
+				closesocket(Connection);
 				WSACleanup();
-				std::getchar();
 				return;
 			}
 		}
 	} while (data.size() > 0);
 }
 
-void RecvHandle(SOCKET soc)
+void RecvHandle(SOCKET Connection)
 {
 	while (true)
 	{
-		char recvbuf[512];
-		ZeroMemory(recvbuf, 512);
-		auto iRecv = recv(soc, recvbuf, 512, 0);
-		if (iRecv > 0)
+		char buffer[BUFFER_SIZE];
+		ZeroMemory(buffer, BUFFER_SIZE);					// Zerar o buffer
+		auto bytes = recv(Connection, buffer, BUFFER_SIZE, 0);		// Continua recebendo dados até mandar parar
+		if (bytes > 0)
 		{
-			std::cout << '\r';
-			std::cout << recvbuf << "\n";
-			std::cout << g_name << ": ";
+			std::cout << "Bytes Recebidos: " << bytes << '\n';
+			std::cout << buffer << "\n";					// Conteudo do buffer
 		}
-		else if (iRecv == 0)
+		else if (bytes == 0)
 		{
 			std::cout << "Connection closed" << "\n";
 			return;
@@ -62,25 +58,26 @@ void RecvHandle(SOCKET soc)
 		else
 		{
 			std::cout << "recv failed: " << WSAGetLastError() << "\n";
-			closesocket(soc);
+			closesocket(Connection);
 			WSACleanup();
-			std::getchar();
 			return;
 		}
 	}
+
 }
 
 
 void Client::StartClient()
 {
+
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
 		std::cout << "WSADATA ERROR : Error no winsock." << "\n";
 		return;
 	}
+	SOCKET clientSoc = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	auto clientSoc = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (clientSoc == INVALID_SOCKET)
 	{
 		std::cout << "Error: falha na conexão ( Falha na criação do Socket )" << "\n";
@@ -89,13 +86,13 @@ void Client::StartClient()
 		return;
 	}
 
-	// fill server address
-	struct sockaddr_in TCPServerAdd;
-	TCPServerAdd.sin_family = AF_INET;
-	TCPServerAdd.sin_port = htons(PORT);
-	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+	// Criação da estrutura do endereço //
+	struct sockaddr_in TCPServerAdd;								// Estrura para qual conectar
+	TCPServerAdd.sin_family = AF_INET;								// Ip versão 4
+	TCPServerAdd.sin_port = htons(PORT);							// Qual a porta que o servidor vai usar 
+	TCPServerAdd.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");		// Identifica o endereço do servidor em bit
 
-	// connect to server
+	// Conexão com servidor //
 	auto iConnect = connect(clientSoc, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
 	if (iConnect == SOCKET_ERROR)
 	{
@@ -105,13 +102,13 @@ void Client::StartClient()
 		return;
 	}
 	std::cin.clear();
-	std::cout << "-----> Conectado ao Servidor Batalha Naval!\n";
+
 	std::cout << "\n\tInfome seu NickName: ";
 	std::getline(std::cin, g_name);
 	std::cout << "\n";
 
-	auto iSend = send(clientSoc, g_name.c_str(), strlen(g_name.c_str()), 0);
-	if (iSend == SOCKET_ERROR)
+	auto servidor = send(clientSoc, g_name.c_str(), strlen(g_name.c_str()), 0);
+	if (servidor == SOCKET_ERROR)
 	{
 		std::cout << "Sending Failed " << "\n";
 		std::cout << "Error No-> " << WSAGetLastError() << "\n";
@@ -120,17 +117,11 @@ void Client::StartClient()
 		return;
 	}
 
-
-
-
-
-	/*
-	std::thread senderThread = std::thread(send_handle, clientSoc);
+	std::thread senderThread = std::thread(SendHandle, clientSoc);
 	senderThread.detach();
 
-	std::thread recverThread = std::thread(recv_handle, clientSoc);
+	std::thread recverThread = std::thread(RecvHandle, clientSoc);
 	recverThread.join();
-	*/
 
 	closesocket(clientSoc);
 	WSACleanup();
