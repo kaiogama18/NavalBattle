@@ -22,11 +22,11 @@ void SendHandle(SOCKET Connection)
 	std::string data;
 	do
 	{
-		std::cout << g_name << " : ";
+		//std::cout << g_name << " : ";
 		std::getline(std::cin, data);
 		if (data.size() > 0)
 		{
-			data = g_name + ": " + data;
+			//data = g_name + ": " + data;
 			if (send(Connection, data.c_str(), strlen(data.c_str()), 0) == SOCKET_ERROR)
 			{
 				std::cout << "send failed: " << WSAGetLastError() << "\n";
@@ -43,11 +43,11 @@ void RecvHandle(SOCKET Connection)
 	while (true)
 	{
 		char buffer[BUFFER_SIZE];
-		ZeroMemory(buffer, BUFFER_SIZE);					// Zerar o buffer
+		ZeroMemory(buffer, BUFFER_SIZE);							// Zerar o buffer
 		auto bytes = recv(Connection, buffer, BUFFER_SIZE, 0);		// Continua recebendo dados até mandar parar
+
 		if (bytes > 0)
 		{
-			std::cout << "Bytes Recebidos: " << bytes << '\n';
 			std::cout << buffer << "\n";					// Conteudo do buffer
 		}
 		else if (bytes == 0)
@@ -65,7 +65,6 @@ void RecvHandle(SOCKET Connection)
 	}
 
 }
-
 
 void Client::StartClient()
 {

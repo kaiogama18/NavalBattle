@@ -9,6 +9,32 @@
 SOCKET		Connections[100];			// Definição do número máximo de clientes
 int			Counter = 0;				// Auxiliar para contar o número de clientes
 fd_set		master;						// para colocar soquetes em um conjunto.
+std::vector<std::string> g_nicknames;
+
+void Game()
+{
+	std::string message{};
+	for (int i = 0; i < Counter; i++)
+	{
+		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
+		send(Connections[i], message.c_str(), strlen(message.c_str()), 0);
+	}
+
+
+
+	
+	message = "-----> Sua vez do(a) " + g_nicknames[0] + ":\n" + "Informe as Coordenadas para o ataque: ";
+	send(Connections[0], message.c_str(), strlen(message.c_str()), 0);
+	char coordenadas[50];
+	ZeroMemory(coordenadas, 50);
+	recv(Connections[0], coordenadas, sizeof(coordenadas), 0);
+	send(Connections[1], coordenadas, sizeof(coordenadas), 0);
+
+
+
+
+}
+
 
 // Thread para tratar o Cliente //
 void ConnectionHandler(int index)
@@ -16,15 +42,19 @@ void ConnectionHandler(int index)
 	char nickname[50];
 	ZeroMemory(nickname, 50);
 	recv(Connections[index], nickname, sizeof(nickname), 0);
-	
-	std::string message = "-----> Bem vindo ao Servidor Batalha Naval ";
+
+	std::string message = "\tBem vindo ao Servidor Batalha Naval ";
 	message = message + nickname;
 
 	send(Connections[index], message.c_str(), strlen(message.c_str()), 0);
 	std::cout << "\n-----> Jogador(a) [" << index << "]: [ " << nickname << " ] entrou no Servidor!" << '\n';
 
+	// the type of second is double
+
+	g_nicknames.push_back(nickname);
+
 	if (index > 0 && index < 2)
-		std::cout << "----- Começou o jogo -----\n\n";
+		Game();
 }
 
 // Para varias chamadas de clientes usando threads //
