@@ -7,39 +7,21 @@
 #pragma comment (lib, "ws2_32.lib")
 
 SOCKET		Connections[100];			// Definição do número máximo de clientes
-int			Counter = 0;			// Auxiliar para contar o número de clientes
-fd_set		master;					// para colocar soquetes em um conjunto.
+int			Counter = 1;				// Auxiliar para contar o número de clientes
+fd_set		master;						// para colocar soquetes em um conjunto.
 
-
-void NewGame()
-{
-	//std::cout << "\n----- [ Vamos Começar a partida] -----\n";
-	std::string message = "\n----- [ Vamos Começar a partida] -----\n";
-	for (auto i = 0; i < Counter; i++)
-	{
-	}
-	send(Connections[1], message.c_str(), strlen(message.c_str()), 0);
-}
-
-
-// Thread para tratar o Cliente
+// Thread para tratar o Cliente //
 void ConnectionHandler(int index)
 {
 	char nickname[50];
 	ZeroMemory(nickname, 50);
-
 	recv(Connections[index], nickname, sizeof(nickname), 0);
-	//std::cout << "\n -->" << nickname << '\n';
-
+	
 	std::string message = "-----> Bem vindo ao Servidor Batalha Naval ";
 	message = message + nickname;
 
-	for (auto i = 0; i < Counter; i++)
-	{
-		//std::cout << "\n----->" << Counter << "\n";
-		send(Connections[index], message.c_str(), strlen(message.c_str()), 0);
-	}
-	std::cout << "\n-----> Jogador(a) [" << Counter << "]: [ " << nickname << " ] entrou no Servidor!" << '\n';
+	send(Connections[index], message.c_str(), strlen(message.c_str()), 0);
+	std::cout << "\n-----> Jogador(a) [" << index << "]: [ " << nickname << " ] entrou no Servidor!" << '\n';
 }
 
 // Para varias chamadas de clientes usando threads //
@@ -63,21 +45,10 @@ void AcceptHandler(SOCKET connection)
 			}
 			else
 			{
-
-				/*
-				std::cout << "Client Connected!\n";
-				std::string msg = "Hello. It`s my first network program!";
-				int msg_size = msg.size();
-				send(newConnection, (char*)&msg_size, sizeof(int), NULL);
-				send(newConnection, msg.c_str(), msg_size, NULL);
-				*/
 				Connections[i] = newConnection;
 				Counter++;
-
-				// Chamando a thread ConnectionHandler -> Ler a tratar o Cliente //
 				std::thread connectionHandler = std::thread(ConnectionHandler, i);
 				connectionHandler.detach();
-				// para colocar soquetes em um conjunto.t //
 				FD_SET(newConnection, &master);
 
 			}
@@ -135,12 +106,7 @@ void StartServer()
 	servidorAddr.sin_port = htons(1111);							// Qual a porta que o servidor vai usar 
 
 	// Conexão com servidor //
-	//auto result = bind(servidor, (sockaddr*)&servidorAddr, sizeof(servidorAddr));
-
-	SOCKET result;
-
-	result = bind(servidor, (sockaddr*)&servidorAddr, sizeof(servidorAddr));
-
+	auto result = bind(servidor, (sockaddr*)&servidorAddr, sizeof(servidorAddr));
 	if (result == SOCKET_ERROR)
 	{
 		std::cout << " Error: Listen falhou \n";
@@ -160,17 +126,11 @@ void StartServer()
 	}
 	std::cout << " Esperando Jogador! \n";
 
-	SOCKET newConnection;
-
-
 	// Thread para aceitar cliente
 	std::thread acceptThread = std::thread(AcceptHandler, servidor);
 	acceptThread.join();
 	closesocket(servidor);
 	WSACleanup();
-
-
-
 }
 
 int main()
