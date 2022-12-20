@@ -13,6 +13,13 @@
 
 std::string g_name;
 
+enum Packet
+{
+	P_Message,
+	P_Coordenadas
+};
+
+
 Client::Client()
 {
 }

@@ -11,6 +11,14 @@ int			Counter = 0;				// Auxiliar para contar o número de clientes
 fd_set		master;						// para colocar soquetes em um conjunto.
 std::vector<std::string> g_nicknames;
 
+
+enum Packet
+{
+	P_Message,
+	P_Coordenadas
+};
+
+
 void Game()
 {
 	std::string message{};
@@ -21,17 +29,14 @@ void Game()
 	}
 
 
-
+	char * arrStr[50]{};
+	char coordenadas[50];
+	ZeroMemory(coordenadas, 50);
 	
 	message = "-----> Sua vez do(a) " + g_nicknames[0] + ":\n" + "Informe as Coordenadas para o ataque: ";
 	send(Connections[0], message.c_str(), strlen(message.c_str()), 0);
-	char coordenadas[50];
-	ZeroMemory(coordenadas, 50);
 	recv(Connections[0], coordenadas, sizeof(coordenadas), 0);
 	send(Connections[1], coordenadas, sizeof(coordenadas), 0);
-
-
-
 
 }
 
