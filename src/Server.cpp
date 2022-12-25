@@ -27,8 +27,6 @@ void Game()
 		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
 		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
 		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
-		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
-		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
 		send(Connections[i], message.c_str(), strlen(message.c_str()), 0);
 	}
 
