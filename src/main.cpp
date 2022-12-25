@@ -1,5 +1,6 @@
 #include <iostream>
-#include "NavalBattle.h"
+//#include "NavalBattle.h"
+#include "Client.h"
 
 
 int main(int argc, char* argv[])
@@ -7,12 +8,12 @@ int main(int argc, char* argv[])
 	setlocale(LC_ALL, "portuguese");
 	setlocale(LC_ALL, "en_US");
 
-	NavalBattle navalBattle;
+	//NavalBattle navalBattle;
 
-	navalBattle.Menu();
+	//navalBattle.Menu();
 ;
-	//Client client;
-	//client.StartClient();
+	Client client;
+//	client.StartClient();
 
 	//NavalBattle navalBattle;
 

@@ -10,25 +10,83 @@
 
 #define		PORT 1111			// Definição da porta padrão
 #define		BUFFER_SIZE 512		// Definição do tamanho do buffer das mensagens
-
 std::string g_name;
 
 enum Packet
 {
-	P_Message,
 	P_Coordenadas
 };
 
 
 Client::Client()
 {
+
+	//Um jogador para um cliente
+	m_Player = new Player;
+	// Vida do jogador é a somatoria de todos os quadrados dos barcos = 21 
+	m_Player->SetHealth();
+	Menu();
 }
+
+// Menu para configurar seu  tabuleiro //  
+const void Client::Menu()
+{
+	int op;
+	std::string nickName;
+
+	std::cout << "\n ----- [ MENU ]\n\n";
+	std::cout << R"( 1 - Entrar no Servidor
+ 2 - Cadastra Navios
+ 3 - Imprimir o Tabuleiro
+ 0 - Sair )" << '\n';
+	std::cout << "\n-----> Informe a opção: ";
+	std::cin >> op;
+	std::cin.clear();
+
+	switch (op)
+	{
+	case 1:
+		std::cin.ignore();
+		StartClient();
+		break;
+	case 2:
+		std::cout << "\n Cadastra Navios ";
+		break;
+
+	case 3:
+		std::cout << "\n  Imprimir o Tabuleiro ";
+		m_Player->PrintBoard();
+		break;
+	case 0:
+		break;
+	default:
+		break;
+	}
+
+}
+
+
 
 void SendHandle(SOCKET Connection)
 {
 	std::string data;
+	//Packet packettype;
+
 	do
 	{
+		/*
+		recv(Connection, (char*)&packettype, sizeof(Packet), NULL);
+		if (packettype == P_Coordenadas)
+		{
+			std::cout << "SendHandle -> P_Coordenadas\n";
+		}
+		else
+		{
+			std::cout << "SendHandle -> \n" << P_Coordenadas;
+
+		}
+		*/
+
 		//std::cout << g_name << " : ";
 		std::getline(std::cin, data);
 		if (data.size() > 0)
@@ -47,27 +105,54 @@ void SendHandle(SOCKET Connection)
 
 void RecvHandle(SOCKET Connection)
 {
+	Packet packettype;
+
 	while (true)
 	{
-		char buffer[BUFFER_SIZE];
-		ZeroMemory(buffer, BUFFER_SIZE);							// Zerar o buffer
-		auto bytes = recv(Connection, buffer, BUFFER_SIZE, 0);		// Continua recebendo dados até mandar parar
+		recv(Connection, (char*)&packettype, sizeof(Packet), NULL);
+		if (packettype == P_Coordenadas)
+		{
+			//std::cout << "RecvHandle -> P_Coordenadas\n";
+			char buffer[BUFFER_SIZE];
+			ZeroMemory(buffer, BUFFER_SIZE);
+			auto bytes = recv(Connection, buffer, BUFFER_SIZE, 0);
 
-		if (bytes > 0)
-		{
-			std::cout << buffer << "\n";					// Conteudo do buffer
-		}
-		else if (bytes == 0)
-		{
-			std::cout << "Connection closed" << "\n";
-			return;
+
+
+			//m_Player->IsHit(bytes);
+			//m_Player->IsHit();
+
+			//m_Player-HitSip(recv(Connection, (char*)&recvData, sizeof(recvData), 0));
+
+				//players = recv(Connection, (char*)&recvData, sizeof(recvData), 0);
+
+
+
+
 		}
 		else
 		{
-			std::cout << "recv failed: " << WSAGetLastError() << "\n";
-			closesocket(Connection);
-			WSACleanup();
-			return;
+
+			char buffer[BUFFER_SIZE];
+			ZeroMemory(buffer, BUFFER_SIZE);							// Zerar o buffer
+			auto bytes = recv(Connection, buffer, BUFFER_SIZE, 0);		// Continua recebendo dados até mandar parar
+
+			if (bytes > 0)
+			{
+				std::cout << buffer << "\n";					// Conteudo do buffer
+			}
+			else if (bytes == 0)
+			{
+				std::cout << "Connection closed" << "\n";
+				return;
+			}
+			else
+			{
+				std::cout << "recv failed: " << WSAGetLastError() << "\n";
+				closesocket(Connection);
+				WSACleanup();
+				return;
+			}
 		}
 	}
 
@@ -75,6 +160,7 @@ void RecvHandle(SOCKET Connection)
 
 void Client::StartClient()
 {
+
 
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)

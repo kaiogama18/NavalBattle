@@ -16,6 +16,7 @@ public:
 	void	AddShip(int&);
 	void	SetHealth();
 	int		GetHealth();
+	void	IsHit(char);
 
 	~Player();
 private:

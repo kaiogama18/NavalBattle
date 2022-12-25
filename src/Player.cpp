@@ -35,3 +35,9 @@ Player::~Player()
 {
 	delete m_Board;
 }
+
+void Player::IsHit(char coordenada)
+{
+	std::cout << "\nIsHit: minha vida: " << m_Health;
+	std::cout << "\nIsHit: coordenada coordenada: " << coordenada;
+}

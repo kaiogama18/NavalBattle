@@ -25,18 +25,41 @@ void Game()
 	for (int i = 0; i < Counter; i++)
 	{
 		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
+		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
+		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
+		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
+		message = "\n----------  COMEÇOU O JOGO [ " + g_nicknames[0] + " vs " + g_nicknames[1] + " ]\n";
 		send(Connections[i], message.c_str(), strlen(message.c_str()), 0);
 	}
 
+	char* arrStr[50]{};
+	char coordenadas[50];
+	ZeroMemory(coordenadas, 50);
 
+	message = "-----> Sua vez do(a) " + g_nicknames[0] + ":\n" + "Informe as Coordenadas para o ataque: ";
+	send(Connections[0], message.c_str(), strlen(message.c_str()), 0);
+	recv(Connections[0], coordenadas, sizeof(coordenadas), 0);
+
+
+	Packet msgtype = P_Message;
+	send(Connections[1], (char*)&msgtype, sizeof(Packet), NULL);
+	send(Connections[1], coordenadas, sizeof(coordenadas), 0);
+
+	/*
+
+	Packet msgtype = P_Message;
+	//send(newConnection, (char*)&msgtype, sizeof(Packet), NULL);
 	char * arrStr[50]{};
 	char coordenadas[50];
 	ZeroMemory(coordenadas, 50);
 	
 	message = "-----> Sua vez do(a) " + g_nicknames[0] + ":\n" + "Informe as Coordenadas para o ataque: ";
+	send(Connections[0], (char*)&msgtype, sizeof(Packet), NULL);
 	send(Connections[0], message.c_str(), strlen(message.c_str()), 0);
 	recv(Connections[0], coordenadas, sizeof(coordenadas), 0);
 	send(Connections[1], coordenadas, sizeof(coordenadas), 0);
+	*/
+
 
 }
 
@@ -48,7 +71,7 @@ void ConnectionHandler(int index)
 	ZeroMemory(nickname, 50);
 	recv(Connections[index], nickname, sizeof(nickname), 0);
 
-	std::string message = "\tBem vindo ao Servidor Batalha Naval ";
+	std::string message = "\t Bem vindo ao Servidor Batalha Naval ";
 	message = message + nickname;
 
 	send(Connections[index], message.c_str(), strlen(message.c_str()), 0);

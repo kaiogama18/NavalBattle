@@ -1,4 +1,5 @@
 #pragma once
+#include"Player.h"
 
 
 #include <iostream>
@@ -13,4 +14,8 @@ class Client
 public:
 	Client();
 	void StartClient();
+	const void Client::Menu();
+
+private:
+	Player* m_Player;
 };
